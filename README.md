@@ -98,4 +98,10 @@ Elasticsearchが動作する各サーバのこと。(=JVMインスタンス)
 - 必須対処方法
  - Master-eligibleノードの数を３以上の奇数にすること
  - elasticsearch.yml設定ファイルのパラメータ「discovery.zen.minimum_master_nodes」の数をMaster-eligibleノード数の過半数に設定すること((N/2)+1)。このパラメータはデフォルト値が「１
- 」
+ 」であるため、事前設定が必要。
+
+
+
+
+※ 参照資料：「Elasticsearch実践ガイド」(惣道 哲也 著)
+
