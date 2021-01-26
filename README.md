@@ -155,7 +155,7 @@ PUT /test/_mapping
 
 - データストリームに存在するmappingのフィールドを変更する：
 
-putで新しい項目を追加する
+❌putで既存の項目を更新する
 
 ```
 PUT /test/_mapping
