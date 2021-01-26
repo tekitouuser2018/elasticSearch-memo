@@ -129,8 +129,7 @@ Elasticsearchが動作する各サーバのこと。(=JVMインスタンス)
 
 putで新しい項目を追加する
 
-'''
-
+```
 PUT /test/_mapping
 {
   "properties": {
@@ -144,24 +143,21 @@ PUT /test/_mapping
     }
   }
 }
-
-'''
+```
 
 結果：
 
-'''
+```
 {
   "acknowledged" : true
 }
-
-'''
+```
 
 - データストリームに存在するmappingのフィールドを変更する：
 
 putで新しい項目を追加する
 
-'''
-
+```
 PUT /test/_mapping
 {
   "properties": {
@@ -175,12 +171,11 @@ PUT /test/_mapping
     }
   }
 }
-
-'''
+```
 
 結果：
 
-'''
+```
 {
   "error" : {
     "root_cause" : [
@@ -194,8 +189,7 @@ PUT /test/_mapping
   },
   "status" : 400
 }
-
-'''
+```
 
 - データストリームで動的にインデックスをセッティングする：
 
