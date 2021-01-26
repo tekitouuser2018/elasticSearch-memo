@@ -123,5 +123,88 @@ Elasticsearchが動作する各サーバのこと。(=JVMインスタンス)
 
 - ステータスコード409 : Conflict
 
-※ 参照資料：「Elasticsearch実践ガイド」(惣道 哲也 著)
+### Mappingの変更について
+----
+- データストリームに新しくmappingを追加する：
+
+putで新しい項目を追加する
+
+'''
+
+PUT /test/_mapping
+{
+  "properties": {
+    "host": {
+      "properties": {
+        "addadd": {
+          "type": "keyword"
+        }
+      }
+      }
+    }
+  }
+}
+
+'''
+
+結果：
+
+'''
+{
+  "acknowledged" : true
+}
+
+'''
+
+- データストリームに存在するmappingのフィールドを変更する：
+
+putで新しい項目を追加する
+
+'''
+
+PUT /test/_mapping
+{
+  "properties": {
+    "host": {
+      "properties": {
+        "addadd": {
+          "type": "text"
+        }
+      }
+      }
+    }
+  }
+}
+
+'''
+
+結果：
+
+'''
+{
+  "error" : {
+    "root_cause" : [
+      {
+        "type" : "illegal_argument_exception",
+        "reason" : "mapper [host.addadd] cannot be changed from type [keyword] to [text]"
+      }
+    ],
+    "type" : "illegal_argument_exception",
+    "reason" : "mapper [host.addadd] cannot be changed from type [keyword] to [text]"
+  },
+  "status" : 400
+}
+
+'''
+
+- データストリームで動的にインデックスをセッティングする：
+
+- データストリームで静的にインデックスをセッティングする：
+
+
+
+
+
+
+※ 参照資料：https://www.elastic.co/guide/en/elasticsearch/reference/7.10/*, 「Elasticsearch実践ガイド」(惣道 哲也 著)
 
