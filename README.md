@@ -191,13 +191,88 @@ PUT /test/_mapping
 }
 ```
 
+・ReIndexを行う:
+
 - データストリームで動的にインデックスをセッティングする：
 
 - データストリームで静的にインデックスをセッティングする：
 
 
 
+### クエリDSL - 全文検索クエリ
+----
 
+- match_all : 特殊なクエリ。検索条件を指定しなくても必ず全件を返す。格納されたドキュメントの確認などに使用。
+
+```
+{
+  "query" : {
+    "match_all" : {}
+  }
+}
+```
+
+- match : 典型的なクエリ。match句の中に、フィールド名及び検索キーワードを指定する。
+
+```
+{
+  "query" : {
+    "match" : {
+      "message" : "word1 word2"
+    }
+  }
+}
+```
+- operator : オペレータで一致条件を指定
+
+```
+{
+  "query" : {
+    "match" : {
+      "message" : "word1 word2",
+      "operator" : "and"
+    }
+  }
+}
+```
+
+- minimum_should_match : 検索条件に含む単語の最低件数を指定
+
+```
+{
+  "query" : {
+    "match" : {
+      "message" : "word1 word2 word3 word4",
+      "minimum_should_match" : "2"
+    }
+  }
+}
+```
+
+- sentence : 指定された語順のドキュメントのみを検索する
+
+```
+{
+  "query" : {
+    "match_phrase" : {
+      "sentence" : "momotaro killed ogre"
+    }
+  }
+}
+```
+
+- query_string : 特殊な記述。検索条件部分にLuceneシンタックスでの検索式を直接記載できる。低レベル検索用のクエリとなります。
+
+```
+{
+  "query" : {
+    "query_string" : {
+      "default_field" : "message",
+      "query" : "message:Elasticsearch^2 + message:world -user_name:Smith"
+    }
+  }
+}
+```
 
 
 ※ 参照資料：https://www.elastic.co/guide/en/elasticsearch/reference/7.10/*, 「Elasticsearch実践ガイド」(惣道 哲也 著)
