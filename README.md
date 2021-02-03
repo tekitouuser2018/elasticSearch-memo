@@ -199,7 +199,7 @@ PUT /test/_mapping
 
 
 
-### クエリDSL - 全文検索クエリ
+### 基本クエリ - 全文検索クエリ
 ----
 
 - match_all : 特殊なクエリ。検索条件を指定しなくても必ず全件を返す。格納されたドキュメントの確認などに使用。
@@ -273,7 +273,80 @@ PUT /test/_mapping
   }
 }
 ```
+### 基本クエリ - Termベースクエリ
+- Termベースクエリは、指定した検索キーワードに完全一致したフィールドを探すときに使うクエリ種別。keyword型のフィールドを探索するために使うクエリ。
+----
 
+```
+{
+  "query" : {
+    "terms" : {
+      "prefecture" : ["Tokyo", "Kanagawa", "Chiba", "Saitama"]
+    }
+  }
+}
+```
+
+- Range : 主に数値型や日付型のフィールドを対象とする
+----
+
+```
+{
+  "query" : {
+    "range" : {
+      "stock_price" : {
+        "gte": "15.00",
+        "lte": "25.00"
+    }
+  }
+}
+```
+日付型のフィールドを対象とした範囲探索では特別な日付計算用の式を使うことができる
+```
+{
+  "query" : {
+    "range" : {
+      "manufactured_date" : {
+        "gte": "now-1w"
+    }
+  }
+}
+```
+### 複合クエリ - Boolクエリ
+- Boolクエリは、これまで紹介してきた基本クエリを複数組み合わせて、複合クエリを構成するための記法
+----
+
+```
+{
+  "query" : {
+    "bool" : {
+      "must" : [<基本クエリ>],      // AND
+      "should" : [<基本クエリ>],    // OR
+      "must_not" : [<基本クエリ>],  // NOT
+      "filter" : [<基本クエリ>]     
+    }
+  }
+}
+```
+
+### クエリ結果のソート
+----
+
+```
+{
+  "query" : {
+    "sort" : [
+      {"stock_price" : {"order" : "desc"}},
+      {"founded" : {"order" : "asc"}},
+      "_score"
+    ]
+  }
+}
+```
+
+### インポート - csvファイルなど
+----
+Logstash - .confのfilterに型を記載。
 
 ※ 参照資料：https://www.elastic.co/guide/en/elasticsearch/reference/7.10/*, 「Elasticsearch実践ガイド」(惣道 哲也 著)
 
