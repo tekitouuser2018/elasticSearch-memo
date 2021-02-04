@@ -386,6 +386,132 @@ curl -XPOST 'http://localhost:9200/_analyze_' -H 'Content-Type: application/json
 
 ```
 
+### Aggregation
+- 検索結果の集合に対して、分類や集計を行うことができる機能
+----
+
+### Aggregationの構成
+- 分類や集計を行うための多くのタイプをカテゴリ分けすると４つに分類できる。個々のタイプをうまく組み合わせることで非常に柔軟な分析が行える。
+----
+
+- Metrics : 分類された各グループに対して、最小、最大、平均などの統計値を計算する。書籍のジャンル別に件数をカウントする、平均価格を集計するなど。
+
+- Buckets : ドキュメントをそのフィールド値に基づいてグループ化するための分類方法を表す。書籍のジャンルを表すフィールドを使ってジャンル名ごとのグループに分類するなど。
+
+- Pipeline : Bucketsなどの他のAggregationの結果を用いてさらに集計をする機能。月別の平均株価を分類・集計し、さらに前月からの差分を計算する場合など
+
+- Matrix : 複数のフィールドの値を対象に相関や共分散などの統計値を計算することができる機能。
+
+
+### Aggregationのクエリ記法
+----
+ - 基本的なクエリ記法
+ * 計算した統計量の数値だけ知りたい場合、size : 0 を指定するとレスポンスが簡素化される。
+
+```
+{
+  "aggregations(aggs)" : {
+    "<aggregation_name>" : {
+      "<aggregation_type>" : {
+        <aggregation_body>
+    }
+    }
+  }
+}
+
+```
+
+ - avg Metricsクエリ記法
+```
+curl -XPOST 'http://localhost:9200/employee/_search_' -H 'Content-Type: application/json' -d
+'
+{
+  "size" : 0,
+  "query" : {
+    "match" : {
+      "office" : "Otemachi"
+    }
+  },
+  "aggs" : {
+    "avg_salary" : {
+      "avg" : {
+        "field" : "salary"
+      }
+    }
+  }
+}
+'
+
+```
+
+ - min, max Metricsクエリ記法
+```
+curl -XPOST 'http://localhost:9200/employee/_search_' -H 'Content-Type: application/json' -d
+'
+{
+  "size" : 0,
+  "query" : {
+    "term" : {
+      "group" : "HR section"
+    }
+  },
+  "aggs" : {
+    "min_salary" : {
+      "min" : {
+        "field" : "salary"
+      }
+    },
+    "max_salary" : {
+      "max" : {
+        "field" : "salary"
+      }
+    }
+  }
+}
+'
+
+```
+
+ - canrdinality Metricsクエリ記法
+ * ElasticsearchではHyperLogLog++と呼ばれるハッシュ値を用いたアルゴリズムを使って、概算値が計算されるようになっている
+```
+curl -XPOST 'http://localhost:9200/employee/_search_' -H 'Content-Type: application/json' -d
+'
+{
+  "size" : 0,
+  "aggs" : {
+    "unique_user" : {
+      "cardinality" : {
+        "field" : "user_name.keyword"
+      }
+    }
+  }
+}
+'
+
+```
+
+- stats Metricsクエリ記法
+ * count,min,max,avg,sumの統計値がまとめて返される
+```
+curl -XPOST 'http://localhost:9200/employee/_search_' -H 'Content-Type: application/json' -d
+'
+{
+  "size" : 0,
+  "aggs" : {
+    "unique_user" : {
+      "stats" : {
+        "field" : "user_name.keyword"
+      }
+    }
+  }
+}
+'
+
+```
+
+
+
 ### インポート - csvファイルなど
 ----
 Kibana - Indexを指定してcsvファイルを取り込む機能がある。実験的機能。
