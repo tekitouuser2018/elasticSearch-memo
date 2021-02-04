@@ -344,9 +344,61 @@ PUT /test/_mapping
 }
 ```
 
+### Analyzer
+- Elasticsearchでは、全文検索を行うために文章を単語の単位に分割する処理機能を、Analyzerと呼ぶ。Elasticsearchの標準的なAnalyzerでは、日本語の形態素解析処理が行えないため、OSSの日本語形態素解析ソフトウェアkuromojiのプラグインを追加インストールする必要がある。
+----
+
+- Analyzerの指定を含んだマッピング定義の作成例
+```
+curl -XPUT 'http://localhost:9200/my_index' -H 'Content-Type: application/json' -d
+'
+{
+  "mappings" : {
+    "my_type" : {
+      "properties" : {
+        "blog_message" : {
+          "type": "text",
+          "analyzer": "standard"
+        }
+      }
+    }
+  }
+}
+'
+
+```
+- Analyzerの構成要素
+  - Char filter : 入力されたテキストを前処理するためのフィルタ機能
+  - Tokenizer : Char filterのsyつうりょくてきすとを入力として、テキストの分割処理を行い、トークン（単語）の列を生成する。
+  - Token filter : Tokenizeが分割したトークンに対して、トークン単位での変換処理を行うためのフィルタ機能
+
+- Analyzer構成をカスタム定義できる
+
+- Analyzerの動作確認の例
+```
+curl -XPOST 'http://localhost:9200/_analyze_' -H 'Content-Type: application/json' -d
+'
+{
+  "analyzer" : "standard",
+  "text" : "Hello Elasticsearch" 
+}
+'
+
+```
+
 ### インポート - csvファイルなど
 ----
-Logstash - .confのfilterに型を記載。
+Kibana - Indexを指定してcsvファイルを取り込む機能がある。実験的機能。
+Logstash - .confにinput,filter,outputの情報を記述。
+embulk - fluentdのバッチ版。logstashと同様にymlに設定を記述する必要がある。
 
 ※ 参照資料：https://www.elastic.co/guide/en/elasticsearch/reference/7.10/*, 「Elasticsearch実践ガイド」(惣道 哲也 著)
+
+※「Elasticsearch実践ガイド」(惣道 哲也 著)内のソフトウェア環境
+Elasticsearch 6.2.1
+Kibana 6.2.1
+Loagstash 6.2.1
+Packetbeats 6.2.1
+X-Pack 6.2.1
+curator 5.4.1
 
